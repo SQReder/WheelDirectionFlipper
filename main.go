@@ -169,9 +169,9 @@ func main() {
 	fmt.Println("Which device you want to flip?")
 	fmt.Print("Please enter the index: ")
 
-	reader := bufio.NewReader(os.Stdin)
-	line, err := reader.ReadString('\n')
-	panicOnError(err, "Read number failed")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	line := scanner.Text()
 
 	trimmedInput := strings.Trim(string(line), "\n")
 
@@ -238,16 +238,13 @@ func printDevicesTable(configurable []DeviceInstance) {
 	for i, device := range configurable {
 		wheelDirectionString := WheelDirectionToString(device.getWheelDirection())
 
-		var wheelCellFgColor int
-		if device.getWheelDirection() == WHEEL_FLIPPED {
-			wheelCellFgColor = tablewriter.FgGreenColor
-		} else {
-			wheelCellFgColor = tablewriter.Normal
-		}
-
-		table.Rich(
-			[]string{strconv.Itoa(i), device.getFriendlyName(), device.parent.id, device.id, wheelDirectionString},
-			[]tablewriter.Colors{{}, {}, {}, {}, {tablewriter.Normal, wheelCellFgColor}})
+		table.Append([]string{
+			strconv.Itoa(i),
+			device.getFriendlyName(),
+			device.parent.id,
+			device.id,
+			wheelDirectionString,
+		})
 	}
 
 	table.SetHeader([]string{"Index", "Friendly name", "Device ID", "Device Instance Id", "Wheel direction"})
